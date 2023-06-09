@@ -1,6 +1,6 @@
 #pragma once
-const int HORIZON = 21;
-const int VERTICAL = 20;
+const int HORIZON = 16;
+const int VERTICAL = 18;
 
 // 위치.
 typedef struct _tagpos
@@ -17,6 +17,6 @@ typedef struct _tagplayer
 
 #include<vector>
 
-void Init(char _cMaze[VERTICAL][HORIZON], PPLAYER _pPlayer, PPOS _pStartpos, PPOS _pEndpos);
+void Init(char _cMaze[VERTICAL][HORIZON], PPLAYER _pPlayer, PPOS _pSpawnpos);
 void Update(char _cMaze[VERTICAL][HORIZON], PPLAYER _pPlayer); // 값을 변경.
 void Render(char _cMaze[VERTICAL][HORIZON], PPLAYER _pPlayer); // 그려주다.

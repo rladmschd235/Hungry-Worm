@@ -9,41 +9,31 @@ using namespace std;
 
 void Init(char _cMaze[VERTICAL][HORIZON], PPLAYER _pPlayer, PPOS _pSpawnpos)
 {
-	system("mode con cols=80 lines=30");
+	system("mode con cols=30 lines=20");
 	SetConsoleTitle(TEXT("Hungry Worm"));
 	Cursorset(false, 1);
 	// strcpy: string copy / 0: 벽, 1: 길, 2: 생성 위치
-	strcpy_s(_cMaze[1], "1111111111111111111111111");
-	strcpy_s(_cMaze[2], "1000000000000000000000001");
-	strcpy_s(_cMaze[3], "1000000000000000000000001");
-	strcpy_s(_cMaze[4], "1000000000000000000000001");
-	strcpy_s(_cMaze[5], "1000000000000000000000001");
-	strcpy_s(_cMaze[6], "1000000000000000000000001");
-	strcpy_s(_cMaze[7], "1000000000000000000000001");
-	strcpy_s(_cMaze[8], "1000000000000000000000001");
-	strcpy_s(_cMaze[9], "1000000000000000000000001");
-	strcpy_s(_cMaze[10], "1000000000000000000000001");
-	strcpy_s(_cMaze[11], "1000000000000000000000001");
-	strcpy_s(_cMaze[12], "1000000000000000000000001");
-	strcpy_s(_cMaze[13], "1000000000002000000000001");
-	strcpy_s(_cMaze[14], "1000000000000000000000001");
-	strcpy_s(_cMaze[15], "1000000000000000000000001");
-	strcpy_s(_cMaze[16], "1000000000000000000000001");
-	strcpy_s(_cMaze[17], "1000000000000000000000001");
-	strcpy_s(_cMaze[18], "1000000000000000000000001");
-	strcpy_s(_cMaze[19], "1000000000000000000000001");
-	strcpy_s(_cMaze[20], "1000000000000000000000001");
-	strcpy_s(_cMaze[21], "1000000000000000000000001");
-	strcpy_s(_cMaze[22], "1000000000000000000000001");
-	strcpy_s(_cMaze[23], "1000000000000000000000001");
-	strcpy_s(_cMaze[24], "1111111111111111111111111");
+	strcpy_s(_cMaze[3], "111111111111111");
+	strcpy_s(_cMaze[4], "100000000000001");
+	strcpy_s(_cMaze[5], "100000000000001");
+	strcpy_s(_cMaze[6], "100000000000001");
+	strcpy_s(_cMaze[7], "100000000000001");
+	strcpy_s(_cMaze[8], "100000000000001");
+	strcpy_s(_cMaze[9], "100000000000001");
+	strcpy_s(_cMaze[10],"100000000000001");
+	strcpy_s(_cMaze[11],"100000000000001");
+	strcpy_s(_cMaze[12],"100000000000001");
+	strcpy_s(_cMaze[13],"100000000000001");
+	strcpy_s(_cMaze[14],"100000000000001");
+	strcpy_s(_cMaze[15],"100000000000001");
+	strcpy_s(_cMaze[16],"100000000000001");
+	strcpy_s(_cMaze[17],"111111111111111");
 	
-	_pSpawnpos->x = 13;
-	_pSpawnpos->y = 13;
+	_pSpawnpos->x = 7;
+	_pSpawnpos->y = 7;
 
 	PLAYER tSetplayer = { *_pSpawnpos, 1, 0 };
 	*_pPlayer = tSetplayer;
-
 }
 
 void Update(char _cMaze[VERTICAL][HORIZON], PPLAYER _pPlayer)
@@ -62,8 +52,8 @@ void Update(char _cMaze[VERTICAL][HORIZON], PPLAYER _pPlayer)
 		++_pPlayer->tNewpos.x;
 
 	// 벽 밖으로 나가는거 예외처리		21 20
-	//_pPlayer->tNewpos.x = std::clamp(_pPlayer->tNewpos.x, 0, HORIZON - 2);
-	//_pPlayer->tNewpos.y = std::clamp(_pPlayer->tNewpos.y, 0, VERTICAL - 1); // 20 
+	_pPlayer->tNewpos.x = std::clamp (_pPlayer->tNewpos.x, 0, HORIZON - 2);
+	_pPlayer->tNewpos.y = std::clamp(_pPlayer->tNewpos.y, 0, VERTICAL - 1); // 20 
 
 	if (_cMaze[_pPlayer->tNewpos.y][_pPlayer->tNewpos.x] != '0')
 	{
@@ -71,7 +61,7 @@ void Update(char _cMaze[VERTICAL][HORIZON], PPLAYER _pPlayer)
 	}
 }
 
-void Render(char _cMaze[VERTICAL][HORIZON], PPLAYER _pPlayer, vector<POS> boomEffect)
+void Render(char _cMaze[VERTICAL][HORIZON], PPLAYER _pPlayer)
 {
 	for (int i = 0; i < VERTICAL; i++)
 	{
@@ -79,13 +69,11 @@ void Render(char _cMaze[VERTICAL][HORIZON], PPLAYER _pPlayer, vector<POS> boomEf
 		{
 			if (_pPlayer->tpos.x == j
 				&& _pPlayer->tpos.y == i)
-				cout << "§";
+				cout << "□";
 			else if (_cMaze[i][j] == '0') // 벽
-				cout << "■";
-			else if (_cMaze[i][j] == '1') // 길
-				cout << "  "; // 공백을 2번
-			else if (_cMaze[i][j] == '2') // 생성위치
 				cout << "  ";
+			else if (_cMaze[i][j] == '1') // 길
+				cout << "■"; // 공백을 2번
 		}
 		cout << endl;
 	}

@@ -7,6 +7,8 @@
 #include "console.h"
 using namespace std;
 
+int currentDirection = 0;
+
 void Init(char _cMaze[VERTICAL][HORIZON], PPLAYER _pPlayer, PPOS _pSpawnpos)
 {
 	system("mode con cols=30 lines=20");
@@ -30,32 +32,60 @@ void Init(char _cMaze[VERTICAL][HORIZON], PPLAYER _pPlayer, PPOS _pSpawnpos)
 	strcpy_s(_cMaze[17],"111111111111111");
 	
 	_pSpawnpos->x = 7;
-	_pSpawnpos->y = 7;
+	_pSpawnpos->y = 10;
 
 	PLAYER tSetplayer = { *_pSpawnpos, 1, 0 };
 	*_pPlayer = tSetplayer;
 }
 
 void Update(char _cMaze[VERTICAL][HORIZON], PPLAYER _pPlayer)
-{
+{	
+	Sleep(200);
 	// ============ 플레이어 움직임 =============
 	_pPlayer->tNewpos = _pPlayer->tpos;
 	// 플레이어 움직이고 싶어.
+	
+	switch (currentDirection)
+	{
+		case 1:
+			--_pPlayer->tNewpos.y;
+			break;
+		case 2:
+			++_pPlayer->tNewpos.y;
+			break;
+		case 3:
+			--_pPlayer->tNewpos.x;
+			break;
+		case 4:
+			++_pPlayer->tNewpos.x;
+			break;
+		default:
+			break;
+	}
+	
 	// 키 입력받아서 플레이어의 좌표를 바꿔줘야해.
 	if (GetAsyncKeyState(VK_UP) & 0x8000)
-		--_pPlayer->tNewpos.y;
+	{
+		currentDirection = 1;
+	}
 	if (GetAsyncKeyState(VK_DOWN) & 0x8000)
-		++_pPlayer->tNewpos.y;
+	{
+		currentDirection = 2;
+	}
 	if (GetAsyncKeyState(VK_LEFT) & 0x8000)
-		--_pPlayer->tNewpos.x;
+	{
+		currentDirection = 3;
+	}
 	if (GetAsyncKeyState(VK_RIGHT) & 0x8000)
-		++_pPlayer->tNewpos.x;
+	{
+		currentDirection = 4;
+	}
 
-	// 벽 밖으로 나가는거 예외처리		21 20
-	_pPlayer->tNewpos.x = std::clamp (_pPlayer->tNewpos.x, 0, HORIZON - 2);
-	_pPlayer->tNewpos.y = std::clamp(_pPlayer->tNewpos.y, 0, VERTICAL - 1); // 20 
+	// 벽 밖으로 나가는거 예외처리		16 18
+	_pPlayer->tNewpos.x = std::clamp (_pPlayer->tNewpos.x, 0, HORIZON - 2); // 15
+	_pPlayer->tNewpos.y = std::clamp(_pPlayer->tNewpos.y, 0, VERTICAL - 1); // 17
 
-	if (_cMaze[_pPlayer->tNewpos.y][_pPlayer->tNewpos.x] != '0')
+	if (_cMaze[_pPlayer->tNewpos.y][_pPlayer->tNewpos.x] != '1')
 	{
 		_pPlayer->tpos = _pPlayer->tNewpos;
 	}

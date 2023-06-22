@@ -1,20 +1,27 @@
 #include <iostream>
+#include <vector>
 #include "GameLogic.h"
 #include "console.h"
+#include "GameOver.h"
 using namespace std;
 
 int main()
 {
 	char cMaze[VERTICAL][HORIZON] = {};
-	PLAYER tPlayer = {};
-	POS tStartpos = {};
-	POS tEndpos = {};
-	Init(cMaze, &tPlayer, &tStartpos);
+	vector<PLAYER> tPlayer = {};
+	POS tSpawnpos = {};
+	
+	Init(cMaze, tPlayer, &tSpawnpos);
 
 	while (true)
 	{
 		Gotoxy(0, 0);
-		Update(cMaze, &tPlayer);
-		Render(cMaze, &tPlayer);
+		Update(cMaze, tPlayer);
+		Render(cMaze, tPlayer);
+		if (tPlayer.front().isdie)
+		{
+			break;
+		}
 	}
+	OnDie();
 }

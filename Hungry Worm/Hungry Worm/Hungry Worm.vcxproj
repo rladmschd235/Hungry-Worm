@@ -130,11 +130,15 @@
   <ItemGroup>
     <ClCompile Include="Console.cpp" />
     <ClCompile Include="GameLogic.cpp" />
+    <ClCompile Include="GameOver.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Console.h" />
     <ClInclude Include="GameLogic.h" />
+    <ClInclude Include="GameOver.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

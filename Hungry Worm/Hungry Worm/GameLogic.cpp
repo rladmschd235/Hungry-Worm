@@ -1,7 +1,6 @@
 #pragma once
 #include<iostream>
 #include<queue>
-#include<vector>
 #include<Windows.h>
 #include<algorithm>
 #include "GameLogic.h"
@@ -11,14 +10,16 @@ using namespace std;
 
 bool isBeforeStart;
 int itemCount = 0;
-int warmLength = 1;
+int wormLength = 1;
 int currentDirection = 0;
 
-void Init(char _cMaze[VERTICAL][HORIZON], vector<PLAYER>& _pPlayer, PPOS _pSpawnpos)
+void Init(char _cMaze[VERTICAL][HORIZON], queue<PLAYER>& _pPlayer, PPOS _pSpawnpos)
 {
-	system("mode con cols=30 lines=20");
-	SetConsoleTitle(TEXT("Hungry Worm"));	
+	srand((unsigned int)time(NULL));
+	system("mode con cols=30 lines=21");
 	Cursorset(false, 1);
+	SetConsoleTitle(TEXT("Hungry Worm"));	
+	//Cursorset(false, 1);
 
 	isBeforeStart = true;
 
@@ -39,34 +40,34 @@ void Init(char _cMaze[VERTICAL][HORIZON], vector<PLAYER>& _pPlayer, PPOS _pSpawn
 	strcpy_s(_cMaze[15],"100000000000001");
 	strcpy_s(_cMaze[16],"111111111111111");	
 	
+	_pPlayer = queue <PLAYER>();
+	
 	_pSpawnpos->x = 7;
 	_pSpawnpos->y = 9;
 
-	PLAYER tSetplayer = { *_pSpawnpos, 1, 0 };
-	_pPlayer.push_back(tSetplayer);
+	PLAYER tSetplayer = { *_pSpawnpos };
+	_pPlayer.push(tSetplayer);
 }
 
-void Update(char _cMaze[VERTICAL][HORIZON], vector<PLAYER>& _pPlayer)
+void Update(char _cMaze[VERTICAL][HORIZON], queue<PLAYER>& _pPlayer)
 {	
-	cout << endl << "현재 벌레의 길이란다: " << warmLength;
-	
 	// ============ 플레이어 움직임 =============
-	_pPlayer.front().tNewpos = _pPlayer.front().tpos;
+	_pPlayer.back().tNewpos = _pPlayer.back().tpos;
 	// 플레이어 움직이고 싶어.
 	
 	switch (currentDirection)
 	{
 		case 1:
-			--_pPlayer.front().tNewpos.y; // 위
+			--_pPlayer.back().tNewpos.y; // 위
 			break;
 		case 2:
-			++_pPlayer.front().tNewpos.y; // 아래
+			++_pPlayer.back().tNewpos.y; // 아래
 			break;
 		case 3:
-			--_pPlayer.front().tNewpos.x; // 왼
+			--_pPlayer.back().tNewpos.x; // 왼
 			break;
 		case 4:
-			++_pPlayer.front().tNewpos.x; // 오른
+			++_pPlayer.back().tNewpos.x; // 오른
 			break;
 		default:
 			break;
@@ -96,43 +97,63 @@ void Update(char _cMaze[VERTICAL][HORIZON], vector<PLAYER>& _pPlayer)
 
 	CreateItem(_cMaze);
 	
-	if (_cMaze[_pPlayer.front().tNewpos.y][_pPlayer.front().tNewpos.x] != '1')
+	if (WallCrash(_cMaze[_pPlayer.back().tNewpos.y][_pPlayer.back().tNewpos.x], _pPlayer) || wormLength == 0)
 	{
-		for (int i = 0; i < _pPlayer.size()-1; i++)
+		_pPlayer.back().isdie = PlayerDie();
+	}
+
+	if (GetItem(_cMaze[_pPlayer.back().tNewpos.y][_pPlayer.back().tNewpos.x], _pPlayer))
+	{
+		_cMaze[_pPlayer.back().tNewpos.y][_pPlayer.back().tNewpos.x] = '0';
+	}
+
+	if (_cMaze[_pPlayer.back().tNewpos.y][_pPlayer.back().tNewpos.x] != '1' && wormLength > 1)
+	{
+		// 늘려라.
+		for (int i = 0; i < wormLength; i++)
 		{
-			_pPlayer[i + 1].tpos = _pPlayer[i].tpos;
-			_pPlayer[i].tpos = _pPlayer[i].tNewpos;
+			PLAYER temp = { {},_pPlayer.back().tNewpos };
+			_pPlayer.push(temp);
+			//_pPlayer[i].tpos = _pPlayer[i].tNewpos;
 		}
-	}
 
-	if (GetItem(_cMaze[_pPlayer.front().tpos.y][_pPlayer.front().tpos.x], _pPlayer))
-	{
-		_cMaze[_pPlayer.front().tpos.y][_pPlayer.front().tpos.x] = '0';
+		//_pPlayer.front().tpos = _pPlayer.front().tNewpos;
+		//for (int i = 0; i < _pPlayer.size(); i++)
+		//{
+		//	_pPlayer[i + 1].tNewpos = _pPlayer[i].tpos;
+		//	_pPlayer[i].tpos = _pPlayer[i].tNewpos;
+		//}
 	}
+	_pPlayer.back().tpos = _pPlayer.back().tNewpos;
 
-	if (WallCrash(_cMaze[_pPlayer.front().tNewpos.y][_pPlayer.front().tNewpos.x], _pPlayer))
-	{
-		_pPlayer.front().isdie = PlayerDie();
-	}
-
-	Sleep(200);
+	Sleep(100);
 }
 
-void Render(char _cMaze[VERTICAL][HORIZON], vector<PLAYER>& _pPlayer)
+void Render(char _cMaze[VERTICAL][HORIZON], queue<PLAYER>& _pPlayer)
 {
+	cout << endl << "현재 벌레의 길이란다: " << wormLength;
+
 	for (int i = 0; i < VERTICAL; i++)
 	{
 		for (int j = 0; j < HORIZON; j++)
 		{
-			for (int k = 0; k < _pPlayer.size(); k++)
+			bool drawed = false;
+			for (int k = 0; k < wormLength; k++)
 			{
-				if (_pPlayer[k].tpos.x == j && _pPlayer[k].tpos.y == i)
+				if (_pPlayer.back().tNewpos.x == j && _pPlayer.back().tNewpos.y == i)
 				{
 					cout << "□";
+					drawed = true;
+					break;
 				}
 			}
-			if (_cMaze[i][j] == '0') // 길
+			if (drawed) continue;
+			if (_cMaze[i][j] == '0') // 길5
 				cout << "  ";
+			//if (_pPlayer[0].tpos.x == j && _pPlayer[0].tpos.y == i)
+			//	cout << "□";
+			//else if (_cMaze[i][j] == '0') // 길5
+			//	cout << "  ";
 			else if (_cMaze[i][j] == '1') // 벽
 				cout << "■"; // 공백을 2번
 			else if (_cMaze[i][j] == '2')
@@ -173,23 +194,23 @@ void CreateItem(char _cMaze[VERTICAL][HORIZON])
 	{
 		if (itemCount < 5)
 		{
-			int xRandom = rand() % (15 - 1 + 1) + 1;
-			int yRandom = rand() % (17 - 3 + 1) + 3;
+			int xRandom = rand() % (14 - 3 + 1) + 3;
+			int yRandom = rand() % (14 - 1 + 1) + 1;
 
 			if (_cMaze[yRandom][xRandom] == '0')
 			{
 				float fRandom = rand() % 10001 / 100.f; // 0.0 ~ 100.0%
 
-				if (fRandom <= 50.f) // 아이템. 
+				if (fRandom <= 101.0f) // 아이템. 
 				{
 					// 아이템을 확률로 나오게 하면되잖아.
 					fRandom = rand() % 10001 / 100.f;
-					if (fRandom <= 30.f)
+					if (fRandom <= 60.f)
 					{
 						_cMaze[yRandom][xRandom] = '2';
 						itemCount++;
 					}
-					else if (fRandom <= 60.f)
+					else if (fRandom <= 70.f)
 					{
 						_cMaze[yRandom][xRandom] = '3';
 						itemCount++;
@@ -212,36 +233,52 @@ void CreateItem(char _cMaze[VERTICAL][HORIZON])
 	}
 }
 
-bool GetItem(char _cItem, vector<PLAYER>& _pPlayer)
+bool GetItem(char _cItem, queue<PLAYER>& _pPlayer)
 {
+	PLAYER tail;
+	
 	if (_cItem == '2')
 	{
-		warmLength += 1;
+		wormLength += 1;
+		//_pPlayer.push(tail);
 		itemCount--;
 		return true;
 	}
 	else if (_cItem == '3')
 	{
-		warmLength += 2;
+		wormLength += 2;
+		//for (int i = 0; i < 2; i++)
+		//{
+		//	_pPlayer.push(tail);
+		//}
 		itemCount--;
 		return true;
 	}
 	else if (_cItem == '4')
 	{
-		warmLength += 3;
+		wormLength += 3;
 		itemCount--;
+		//for (int i = 0; i < 3; i++)
+		//{
+		//	_pPlayer.push(tail);
+		//}
 		return true;
 	}
 	else if (_cItem == '5')
 	{
-		warmLength -= 1;
+		wormLength -= 1;
 		itemCount--;
+		if (_pPlayer.size() <= 1)
+		{
+			_pPlayer.back().isdie = PlayerDie();
+		}
+		//_pPlayer.pop();
 		return true;
 	}
 	return false;
 }
 
-bool WallCrash(char _cWall, vector<PLAYER>& _pPlayer)
+bool WallCrash(char _cWall, queue<PLAYER>& _pPlayer)
 {
 	if (_cWall == '1')
 	{

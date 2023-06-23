@@ -8,7 +8,7 @@ using namespace std;
 int main()
 {
 	char cMaze[VERTICAL][HORIZON] = {};
-	vector<PLAYER> tPlayer = {};
+	queue<PLAYER> tPlayer = {};
 	POS tSpawnpos = {};
 	
 	Init(cMaze, tPlayer, &tSpawnpos);
@@ -18,7 +18,7 @@ int main()
 		Gotoxy(0, 0);
 		Update(cMaze, tPlayer);
 		Render(cMaze, tPlayer);
-		if (tPlayer.front().isdie)
+		if (tPlayer.back().isdie)
 		{
 			break;
 		}

@@ -1,3 +1,4 @@
 ﻿  GameLogic.cpp
-D:\Github\Hungry-Worm\Hungry Worm\Hungry Worm\GameLogic.h(1,1): warning C4828: 파일에 0x366 오프셋에서 시작하는 문자가 포함되어 있습니다. 이 문자는 현재 원본 문자 집합에서 잘못된 문자입니다(코드 페이지 949).
+D:\Github\Hungry-Worm\Hungry Worm\Hungry Worm\GameLogic.h(1,1): warning C4828: 파일에 0x360 오프셋에서 시작하는 문자가 포함되어 있습니다. 이 문자는 현재 원본 문자 집합에서 잘못된 문자입니다(코드 페이지 949).
+D:\Github\Hungry-Worm\Hungry Worm\Hungry Worm\GameLogic.cpp(238,9): warning C4101: 'tail' :참조되지 않은 지역 변수입니다.
   Hungry Worm.vcxproj -> D:\Github\Hungry-Worm\Hungry Worm\x64\Debug\Hungry Worm.exe
